@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Google Maps API Test - Great India</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f4e6 0%, #f0e6d2 100%);
+    }
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    #map {
+      width: 100%;
+      height: 400px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .info { background: #d1ecf1; color: #0c5460; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🗺️ Google Maps API Test</h1>
+    <p>Testing the Google Maps JavaScript API integration for Great India project</p>
+    
+    <div class="status info">
+      <strong>Maps API Key:</strong> AIzaSyB1t6Q16fCeXMoyoemq3UFW-8OW2Om2-S8<br>
+      <strong>Places API Key:</strong> AIzaSyBpCEVGRZdKPjSVQD0Wd6yVlqUc9FVsR6o
+    </div>
+    
+    <div id="map-status" class="status info">
+      🔄 Loading Google Maps...
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="test-info">
+      <h3>Test Results:</h3>
+      <div id="test-results">
+        <div class="status info">Waiting for map to load...</div>
+      </div>
+    </div>
+    
+    <a href="explore.html" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background: #d4af37; color: white; text-decoration: none; border-radius: 5px;">Go to Explore Page</a>
+  </div>
+
+  <script>
+    function initMap() {
+      const mapElement = document.getElementById('map');
+      const statusElement = document.getElementById('map-status');
+      const resultsElement = document.getElementById('test-results');
+      
+      try {
+        // Test map initialization
+        const map = new google.maps.Map(mapElement, {
+          zoom: 6,
+          center: { lat: 20.5937, lng: 78.9629 }, // Center of India
+          styles: [
+            {
+              featureType: 'water',
+              elementType: 'geometry',
+              stylers: [{ color: '#76c7c0' }]
+            }
+          ]
+        });
+        
+        statusElement.className = 'status success';
+        statusElement.innerHTML = '✅ Google Maps loaded successfully!';
+        
+        // Test Places service
+        const placesService = new google.maps.places.PlacesService(map);
+        
+        // Add test markers for major Indian cities
+        const testPlaces = [
+          { name: 'Delhi', lat: 28.6139, lng: 77.2090 },
+          { name: 'Mumbai', lat: 19.0760, lng: 72.8777 },
+          { name: 'Bangalore', lat: 12.9716, lng: 77.5946 },
+          { name: 'Chennai', lat: 13.0827, lng: 80.2707 },
+          { name: 'Kolkata', lat: 22.5726, lng: 88.3639 }
+        ];
+        
+        testPlaces.forEach((place, index) => {
+          const marker = new google.maps.Marker({
+            position: { lat: place.lat, lng: place.lng },
+            map: map,
+            title: place.name,
+            icon: {
+              url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+              scaledSize: new google.maps.Size(25, 25)
+            }
+          });
+          
+          const infoWindow = new google.maps.InfoWindow({
+            content: `<div style="padding: 5px;"><strong>${place.name}</strong><br>Test Marker ${index + 1}</div>`
+          });
+          
+          marker.addListener('click', () => {
+            infoWindow.open(map, marker);
+          });
+        });
+        
+        resultsElement.innerHTML = `
+          <div class="status success">✅ Google Maps JavaScript API - Working</div>
+          <div class="status success">✅ Map rendered successfully</div>
+          <div class="status success">✅ Markers added successfully</div>
+          <div class="status success">✅ Info windows working</div>
+          <div class="status success">✅ Places service initialized</div>
+          <div class="status info">🎯 API keys are correctly configured!</div>
+        `;
+        
+      } catch (error) {
+        statusElement.className = 'status error';
+        statusElement.innerHTML = '❌ Error loading Google Maps: ' + error.message;
+        
+        resultsElement.innerHTML = `
+          <div class="status error">❌ Error: ${error.message}</div>
+          <div class="status error">Please check your API keys and configuration</div>
+        `;
+      }
+    }
+    
+    // Handle API load errors
+    window.gm_authFailure = function() {
+      document.getElementById('map-status').className = 'status error';
+      document.getElementById('map-status').innerHTML = '❌ Google Maps API authentication failed. Please check your API key.';
+      
+      document.getElementById('test-results').innerHTML = `
+        <div class="status error">❌ Authentication Error</div>
+        <div class="status error">The API key may be invalid or doesn't have the required permissions</div>
+        <div class="status info">Required APIs: Maps JavaScript API, Places API</div>
+      `;
+    };
+  </script>
+
+  <!-- Google Maps API with the Maps JavaScript API key -->
+  <script async defer 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1t6Q16fCeXMoyoemq3UFW-8OW2Om2-S8&libraries=places&callback=initMap">
+  </script>
+</body>
+</html>

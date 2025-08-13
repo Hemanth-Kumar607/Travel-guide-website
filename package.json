@@ -1,0 +1,25 @@
+{
+  "name": "greatindia-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Great India tourism platform",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --host=localhost --port=3000 --open=/index.html",
+    "start": "live-server --host=localhost --port=3000 --open=/index.html",
+    "build": "echo 'No build process needed for static HTML'",
+    "serve": "http-server -p 3000 -o"
+  },
+  "keywords": [
+    "html",
+    "css",
+    "javascript",
+    "tourism",
+    "frontend"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "http-server": "^14.1.1"
+  }
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Places Count & Map Test - Great India</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .test-container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .log { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 10px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; margin-top: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔍 Places Count & Map Function Test</h1>
+        
+        <div class="grid">
+            <div>
+                <h3>📊 Places Count Test</h3>
+                <div id="count-status" class="status info">Checking places count...</div>
+                <button onclick="checkPlacesCount()">🔢 Check Total Places</button>
+                <button onclick="checkDuplicates()">🔍 Check for Duplicates</button>
+            </div>
+            
+            <div>
+                <h3>🗺️ Map Function Test</h3>
+                <div id="map-status" class="status info">Checking map function...</div>
+                <button onclick="testMapFunction()">🧪 Test Map Function</button>
+                <button onclick="testSamplePlace()">📍 Test with Taj Mahal</button>
+            </div>
+        </div>
+
+        <div>
+            <h3>📋 Detailed Analysis</h3>
+            <button onclick="analyzeData()">🔬 Analyze All Data</button>
+            <button onclick="clearLog()">🧹 Clear Log</button>
+        </div>
+
+        <div id="console-log" class="log">Starting diagnostic tests...<br></div>
+    </div>
+
+    <!-- Include the explore.js file -->
+    <script src="js/explore.js"></script>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('console-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'red' : type === 'success' ? 'green' : type === 'warning' ? 'orange' : 'black';
+            logDiv.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span><br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[TEST] ${message}`);
+        }
+
+        function updateStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `status ${type}`;
+            element.innerHTML = message;
+        }
+
+        function clearLog() {
+            document.getElementById('console-log').innerHTML = 'Log cleared...<br>';
+        }
+
+        function checkPlacesCount() {
+            log('Checking total places count...');
+            
+            if (typeof INDIAN_TOURIST_PLACES === 'undefined') {
+                updateStatus('count-status', '❌ INDIAN_TOURIST_PLACES not found', 'error');
+                log('INDIAN_TOURIST_PLACES array is not defined', 'error');
+                return;
+            }
+
+            const totalCount = INDIAN_TOURIST_PLACES.length;
+            updateStatus('count-status', `📊 Total Places: ${totalCount}`, totalCount >= 830 ? 'success' : 'error');
+            log(`Total places in INDIAN_TOURIST_PLACES: ${totalCount}`, totalCount >= 830 ? 'success' : 'warning');
+
+            // Check for any undefined or null entries
+            const validPlaces = INDIAN_TOURIST_PLACES.filter(place => place && place.id);
+            log(`Valid places (with ID): ${validPlaces.length}`, validPlaces.length === totalCount ? 'success' : 'warning');
+
+            // Show the ID range
+            const ids = INDIAN_TOURIST_PLACES.map(place => place.id).filter(id => id);
+            const minId = Math.min(...ids);
+            const maxId = Math.max(...ids);
+            log(`ID range: ${minId} to ${maxId}`, 'info');
+        }
+
+        function checkDuplicates() {
+            log('Checking for duplicate IDs...');
+            
+            if (typeof INDIAN_TOURIST_PLACES === 'undefined') {
+                log('INDIAN_TOURIST_PLACES not available for duplicate check', 'error');
+                return;
+            }
+
+            const ids = INDIAN_TOURIST_PLACES.map(place => place.id);
+            const uniqueIds = [...new Set(ids)];
+            
+            const duplicateCount = ids.length - uniqueIds.length;
+            log(`Total entries: ${ids.length}, Unique IDs: ${uniqueIds.length}, Duplicates: ${duplicateCount}`, 
+                duplicateCount === 0 ? 'success' : 'warning');
+
+            if (duplicateCount > 0) {
+                // Find duplicate IDs
+                const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+                log(`Duplicate IDs found: ${[...new Set(duplicates)].join(', ')}`, 'warning');
+            }
+        }
+
+        function testMapFunction() {
+            log('Testing viewPlaceOnMapEnhanced function...');
+            
+            if (typeof viewPlaceOnMapEnhanced === 'function') {
+                updateStatus('map-status', '✅ Map function exists', 'success');
+                log('viewPlaceOnMapEnhanced function is defined and callable', 'success');
+            } else if (typeof window.viewPlaceOnMapEnhanced === 'function') {
+                updateStatus('map-status', '✅ Map function exists (window scope)', 'success');
+                log('viewPlaceOnMapEnhanced function is defined in window scope', 'success');
+            } else {
+                updateStatus('map-status', '❌ Map function missing', 'error');
+                log('viewPlaceOnMapEnhanced function is not defined', 'error');
+            }
+
+            // Check other required variables
+            const checks = [
+                { name: 'map (Google Maps)', exists: typeof map !== 'undefined' },
+                { name: 'leafletMap', exists: typeof leafletMap !== 'undefined' },
+                { name: 'isUsingLeaflet', exists: typeof isUsingLeaflet !== 'undefined' }
+            ];
+            
+            checks.forEach(check => {
+                log(`${check.exists ? '✅' : '❌'} ${check.name}: ${check.exists ? 'defined' : 'NOT defined'}`, 
+                    check.exists ? 'success' : 'warning');
+            });
+        }
+
+        function testSamplePlace() {
+            log('Testing map function with Taj Mahal (ID: 1)...');
+            
+            try {
+                if (typeof viewPlaceOnMapEnhanced === 'function') {
+                    viewPlaceOnMapEnhanced(1);
+                    log('Function called successfully', 'success');
+                } else if (typeof window.viewPlaceOnMapEnhanced === 'function') {
+                    window.viewPlaceOnMapEnhanced(1);
+                    log('Function called successfully (window scope)', 'success');
+                } else {
+                    log('Map function not available for testing', 'error');
+                }
+            } catch (error) {
+                log(`Error calling map function: ${error.message}`, 'error');
+            }
+        }
+
+        function analyzeData() {
+            log('=== COMPREHENSIVE DATA ANALYSIS ===', 'info');
+            
+            if (typeof INDIAN_TOURIST_PLACES === 'undefined') {
+                log('Cannot analyze: INDIAN_TOURIST_PLACES not defined', 'error');
+                return;
+            }
+
+            const places = INDIAN_TOURIST_PLACES;
+            log(`Total places: ${places.length}`, 'info');
+
+            // Count by category
+            const categories = {};
+            places.forEach(place => {
+                const cat = place.category || 'unknown';
+                categories[cat] = (categories[cat] || 0) + 1;
+            });
+
+            log('Places by category:', 'info');
+            Object.entries(categories).forEach(([cat, count]) => {
+                log(`  ${cat}: ${count}`, 'info');
+            });
+
+            // Count by state
+            const states = {};
+            places.forEach(place => {
+                const state = place.state || 'unknown';
+                states[state] = (states[state] || 0) + 1;
+            });
+
+            log(`Total states represented: ${Object.keys(states).length}`, 'info');
+
+            // Check for missing data
+            let missingData = 0;
+            places.forEach((place, index) => {
+                if (!place.lat || !place.lng || !place.name || !place.state) {
+                    missingData++;
+                    log(`Missing data in place ${index + 1} (ID: ${place.id}): ${place.name || 'No name'}`, 'warning');
+                }
+            });
+
+            log(`Places with missing critical data: ${missingData}`, missingData === 0 ? 'success' : 'warning');
+            log('=== ANALYSIS COMPLETE ===', 'info');
+        }
+
+        // Run initial tests when page loads
+        window.onload = function() {
+            log('Page loaded, running initial tests...');
+            setTimeout(() => {
+                checkPlacesCount();
+                testMapFunction();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

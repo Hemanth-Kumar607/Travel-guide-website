@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gallery & Reviews</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/auth-helper.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Gallery & Reviews</h1>
+  </header>
+
+  <section class="upload-section">
+    <h2>Share your Experience</h2>
+    <input type="file" id="image" />
+    <textarea id="comment" placeholder="Write a comment..."></textarea>
+    <button onclick="uploadReview()">Upload</button>
+  </section>
+
+  <section class="gallery" id="gallery-container">
+    <!-- Uploaded images and reviews will appear here -->
+  </section>
+
+  <script src="js/gallery.js"></script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New API Key Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f0f8ff; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .status { padding: 15px; margin: 15px 0; border-radius: 8px; font-weight: bold; text-align: center; }
+        .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
+        .loading { background: #fff3cd; color: #856404; border: 2px solid #ffeaa7; }
+        #map { height: 400px; width: 100%; margin: 20px 0; border: 3px solid #007bff; border-radius: 10px; }
+        .btn { background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin: 8px; font-size: 14px; font-weight: bold; }
+        .btn:hover { background: #0056b3; transform: translateY(-2px); transition: all 0.3s; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+        h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
+        .api-info { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔑 New Google Maps API Key Test</h1>
+        
+        <div class="api-info">
+            <strong>🆕 New API Key:</strong> AIzaSyBpCEVGRZdKPjSVQD0Wd6yVlqUc9FVsR6o<br>
+            <strong>🕐 Updated:</strong> <span id="timestamp"></span>
+        </div>
+        
+        <div id="status" class="status loading">
+            🔄 Loading Google Maps API with new key...
+        </div>
+        
+        <button class="btn" onclick="testBasicMap()">🗺️ Test Basic Map</button>
+        <button class="btn" onclick="testTajMahal()">🕌 Test Taj Mahal Location</button>
+        <button class="btn" onclick="testSearchPlaces()">🔍 Test Places Search</button>
+        <button class="btn btn-success" onclick="openMainApp()">🚀 Open Main App</button>
+        
+        <div id="map"></div>
+        
+        <div id="results" style="margin-top: 20px;"></div>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpCEVGRZdKPjSVQD0Wd6yVlqUc9FVsR6o&libraries=places&callback=initTest" async defer></script>
+
+    <script>
+        let map;
+        let placesService;
+        
+        function updateStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+        
+        function logResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = { success: '#28a745', error: '#dc3545', info: '#17a2b8' };
+            const color = colors[type] || '#000';
+            
+            resultsDiv.innerHTML += `
+                <div style="padding: 8px; margin: 5px 0; border-left: 4px solid ${color}; background: #f8f9fa;">
+                    <strong style="color: ${color};">[${timestamp}]</strong> ${message}
+                </div>
+            `;
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        function initTest() {
+            updateStatus('✅ New API key loaded successfully!', 'success');
+            logResult('🎉 Google Maps API initialized with new key', 'success');
+            
+            // Initialize map
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 28.6139, lng: 77.2090 }, // Delhi
+                zoom: 6,
+                mapTypeId: 'roadmap'
+            });
+            
+            placesService = new google.maps.places.PlacesService(map);
+            logResult('🗺️ Map and Places service ready', 'success');
+            
+            // Add a welcome marker
+            const marker = new google.maps.Marker({
+                position: { lat: 28.6139, lng: 77.2090 },
+                map: map,
+                title: 'New API Key Test - Delhi',
+                animation: google.maps.Animation.BOUNCE
+            });
+            
+            setTimeout(() => marker.setAnimation(null), 3000);
+            
+            logResult('📍 Test marker added to Delhi', 'info');
+        }
+        
+        function testBasicMap() {
+            logResult('🧪 Testing basic map functionality...', 'info');
+            
+            try {
+                map.setCenter({ lat: 19.0760, lng: 72.8777 }); // Mumbai
+                map.setZoom(12);
+                
+                const marker = new google.maps.Marker({
+                    position: { lat: 19.0760, lng: 72.8777 },
+                    map: map,
+                    title: 'Mumbai - Map Test'
+                });
+                
+                logResult('✅ Basic map controls working (Mumbai)', 'success');
+            } catch (error) {
+                logResult(`❌ Basic map test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testTajMahal() {
+            logResult('🧪 Testing Taj Mahal location...', 'info');
+            
+            // Taj Mahal coordinates from your app
+            const tajMahal = { lat: 27.1751, lng: 78.0421 };
+            
+            try {
+                map.setCenter(tajMahal);
+                map.setZoom(17);
+                
+                const marker = new google.maps.Marker({
+                    position: tajMahal,
+                    map: map,
+                    title: 'Taj Mahal - New API Key Test',
+                    animation: google.maps.Animation.DROP
+                });
+                
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div style="text-align: center; max-width: 200px;">
+                            <h3>🕌 Taj Mahal</h3>
+                            <p>Testing with new API key!</p>
+                            <p><strong>Coordinates:</strong><br>${tajMahal.lat}, ${tajMahal.lng}</p>
+                        </div>
+                    `
+                });
+                
+                marker.addListener('click', () => infoWindow.open(map, marker));
+                infoWindow.open(map, marker);
+                
+                logResult('✅ Taj Mahal marker and info window working', 'success');
+            } catch (error) {
+                logResult(`❌ Taj Mahal test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testSearchPlaces() {
+            logResult('🧪 Testing Places API search...', 'info');
+            
+            if (!placesService) {
+                logResult('❌ Places service not available', 'error');
+                return;
+            }
+            
+            const request = {
+                query: 'Red Fort Delhi India',
+                fields: ['name', 'geometry', 'formatted_address', 'rating']
+            };
+            
+            placesService.findPlaceFromQuery(request, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                    const place = results[0];
+                    logResult(`✅ Places API working! Found: ${place.name}`, 'success');
+                    logResult(`📍 ${place.formatted_address}`, 'info');
+                    logResult(`⭐ Rating: ${place.rating || 'N/A'}`, 'info');
+                    
+                    // Add marker for found place
+                    const marker = new google.maps.Marker({
+                        position: place.geometry.location,
+                        map: map,
+                        title: place.name
+                    });
+                    
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(16);
+                    
+                } else {
+                    logResult(`❌ Places API failed: ${status}`, 'error');
+                    if (status === 'REQUEST_DENIED') {
+                        logResult('⚠️ Check API key permissions and billing', 'error');
+                    }
+                }
+            });
+        }
+        
+        function openMainApp() {
+            logResult('🚀 Opening main Great India application...', 'success');
+            window.open('explore.html', '_blank');
+        }
+        
+        // Handle API errors
+        window.gm_authFailure = function() {
+            updateStatus('❌ API Authentication Failed', 'error');
+            logResult('❌ New API key authentication failed', 'error');
+        };
+        
+        // Set timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Fallback test
+        setTimeout(() => {
+            if (typeof google === 'undefined') {
+                updateStatus('❌ API Failed to Load', 'error');
+                logResult('❌ Google Maps API failed to load with new key', 'error');
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Write a Review - Great India</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/auth-helper.js"></script>
+  <style>
+    .review-form-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 2px solid var(--heritage-gold);
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--heritage-deep-red), var(--heritage-gold));
+      color: white;
+      border-radius: 15px;
+    }
+
+    .form-header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      border: 1px solid var(--heritage-cream);
+      border-radius: 15px;
+      background: var(--heritage-ivory);
+    }
+
+    .form-section h3 {
+      color: var(--heritage-deep-red);
+      margin-bottom: 1rem;
+      font-family: 'Cinzel', serif;
+      border-bottom: 2px solid var(--heritage-gold);
+      padding-bottom: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--heritage-dark);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid var(--heritage-cream);
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--heritage-gold);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .rating-input {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .star {
+      font-size: 2rem;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .star.active,
+    .star:hover {
+      color: var(--heritage-gold);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+    }
+
+    .image-upload {
+      border: 2px dashed var(--heritage-gold);
+      padding: 2rem;
+      text-align: center;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .image-upload:hover {
+      background: var(--heritage-cream);
+    }
+
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .image-preview img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid var(--heritage-gold);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--heritage-deep-red), var(--heritage-gold));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 2rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .error-message {
+      background: #ffe6e6;
+      color: #d63031;
+      border: 1px solid #fab1a0;
+    }
+
+    .success-message {
+      background: #e6ffe6;
+      color: #00b894;
+      border: 1px solid #a8e6cf;
+    }
+
+    .expense-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .tags-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .tag {
+      background: var(--heritage-gold);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .tag .remove {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .expense-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <h1>🇮🇳 Great India</h1>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="learn-about-india.html">Learn About India</a>
+        <a href="join-community.html">Join Community</a>
+        <a href="write-review.html" class="active">Write Review</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="review-form-container">
+    <div class="form-header">
+      <h1>Share Your Experience</h1>
+      <p>Help fellow travelers discover incredible India through your review</p>
+    </div>
+
+    <div id="error-message" class="message error-message"></div>
+    <div id="success-message" class="message success-message"></div>
+
+    <form id="review-form" enctype="multipart/form-data">
+      <!-- Place Information -->
+      <div class="form-section">
+        <h3>🏛️ Place Details</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="placeName">Place Name *</label>
+            <input type="text" id="placeName" name="placeName" required>
+          </div>
+          <div class="form-group">
+            <label for="placeType">Place Type</label>
+            <select id="placeType" name="placeType">
+              <option value="temple">Temple</option>
+              <option value="monument">Monument</option>
+              <option value="nature">Nature</option>
+              <option value="city">City</option>
+              <option value="beach">Beach</option>
+              <option value="mountain">Mountain</option>
+              <option value="cultural">Cultural Site</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="placeState">State *</label>
+            <input type="text" id="placeState" name="placeState" required>
+          </div>
+          <div class="form-group">
+            <label for="placeCity">City</label>
+            <input type="text" id="placeCity" name="placeCity">
+          </div>
+        </div>
+
+        <input type="hidden" id="placeId" name="placeId">
+      </div>
+
+      <!-- Review Content -->
+      <div class="form-section">
+        <h3>✍️ Your Review</h3>
+        <div class="form-group">
+          <label for="title">Review Title *</label>
+          <input type="text" id="title" name="title" placeholder="Summarize your experience in a few words" required>
+        </div>
+
+        <div class="form-group">
+          <label>Rating *</label>
+          <div class="rating-input">
+            <span class="star" data-rating="1">⭐</span>
+            <span class="star" data-rating="2">⭐</span>
+            <span class="star" data-rating="3">⭐</span>
+            <span class="star" data-rating="4">⭐</span>
+            <span class="star" data-rating="5">⭐</span>
+            <span id="rating-text" style="margin-left: 1rem; font-weight: 600;"></span>
+          </div>
+          <input type="hidden" id="rating" name="rating" required>
+        </div>
+
+        <div class="form-group">
+          <label for="reviewText">Your Review *</label>
+          <textarea id="reviewText" name="reviewText" placeholder="Share your detailed experience, what you loved, tips for other travelers..." required></textarea>
+        </div>
+      </div>
+
+      <!-- Visit Details -->
+      <div class="form-section">
+        <h3>📅 Visit Information</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="visitDate">Visit Date *</label>
+            <input type="date" id="visitDate" name="visitDate" required>
+          </div>
+          <div class="form-group">
+            <label for="seasonVisited">Season *</label>
+            <select id="seasonVisited" name="seasonVisited" required>
+              <option value="">Select Season</option>
+              <option value="spring">Spring (March-May)</option>
+              <option value="summer">Summer (June-August)</option>
+              <option value="monsoon">Monsoon (July-September)</option>
+              <option value="autumn">Autumn (October-November)</option>
+              <option value="winter">Winter (December-February)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="travelType">Travel Type</label>
+            <select id="travelType" name="travelType">
+              <option value="solo">Solo</option>
+              <option value="couple">Couple</option>
+              <option value="family">Family</option>
+              <option value="friends">With Friends</option>
+              <option value="business">Business</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Would you recommend this place?</label>
+            <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
+              <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="radio" name="wouldRecommend" value="true" checked>
+                Yes
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="radio" name="wouldRecommend" value="false">
+                No
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images -->
+      <div class="form-section">
+        <h3>📸 Photos</h3>
+        <div class="form-group">
+          <div class="image-upload" onclick="document.getElementById('images').click()">
+            <p>📷 Click to upload photos (up to 5 images)</p>
+            <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">JPG, PNG, GIF up to 5MB each</p>
+          </div>
+          <input type="file" id="images" name="images" multiple accept="image/*" style="display: none;">
+          <div id="image-preview" class="image-preview"></div>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="form-section">
+        <h3>🏷️ Tags</h3>
+        <div class="form-group">
+          <label for="tagInput">Add tags to help others find your review</label>
+          <input type="text" id="tagInput" placeholder="Type a tag and press Enter (e.g., family-friendly, budget-travel, photography)">
+          <div id="tags-container" class="tags-input"></div>
+        </div>
+      </div>
+
+      <!-- Expenses (Optional) -->
+      <div class="form-section">
+        <h3>💰 Expenses (Optional)</h3>
+        <div class="expense-inputs">
+          <div class="form-group">
+            <label for="accommodation">Accommodation (₹)</label>
+            <input type="number" id="accommodation" name="accommodation" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="food">Food (₹)</label>
+            <input type="number" id="food" name="food" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="transport">Transport (₹)</label>
+            <input type="number" id="transport" name="transport" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="activities">Activities (₹)</label>
+            <input type="number" id="activities" name="activities" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Accessibility -->
+      <div class="form-section">
+        <h3>♿ Accessibility</h3>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="wheelchairAccessible" name="wheelchairAccessible">
+            <label for="wheelchairAccessible">Wheelchair Accessible</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="familyFriendly" name="familyFriendly">
+            <label for="familyFriendly">Family Friendly</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="petFriendly" name="petFriendly">
+            <label for="petFriendly">Pet Friendly</label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-btn">
+        📝 Submit Review
+      </button>
+    </form>
+  </main>
+
+  <script src="js/write-review.js"></script>
+</body>
+</html>
